@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Captura de Datos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fondo: #f7f4ee;
+      --tarjeta: #ffffff;
+      --texto: #1f1d1a;
+      --suave: #8a8279;
+      --linea: #e4ddd2;
+      --oro: #b08d57;
+      --oro-oscuro: #94733f;
+      --rojo: #a34a3c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+      font-weight: 400;
+      color: var(--texto);
+      background: var(--fondo);
+      margin: 0 auto;
+      padding: 48px 16px 64px;
+      max-width: 1100px;
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 600;
+      font-size: 2.4rem;
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin: 0 0 32px;
+    }
+    h2::after {
+      content: "";
+      display: block;
+      width: 48px;
+      height: 1px;
+      background: var(--oro);
+      margin: 14px auto 0;
+    }
+
+    /* ---------- Formulario ---------- */
+    #formulario {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 12px;
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--tarjeta);
+      padding: 40px 36px;
+      border: 1px solid var(--linea);
+      border-radius: 4px;
+      box-shadow: 0 20px 50px rgba(31, 29, 26, 0.06);
+    }
+    #formulario br { display: none; }
+
+    label {
+      flex-basis: 100%;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--suave);
+      margin: 20px 0 8px;
+    }
+    #formulario label:first-of-type { margin-top: 0; }
+
+    input[type="text"],
+    input[type="number"] {
+      flex-basis: 100%;
+      width: 100%;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--texto);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--linea);
+      border-radius: 0;
+      padding: 8px 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-bottom-color: var(--oro);
+    }
+
+    /* ---------- Botones ---------- */
+    button {
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--texto);
+      background: transparent;
+      border: 1px solid var(--texto);
+      border-radius: 2px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    button:hover:not(:disabled) {
+      background: var(--texto);
+      color: var(--fondo);
+    }
+    button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    #formulario button {
+      flex: 1 1 calc(50% - 12px);
+      margin-top: 32px;
+    }
+    #btnRegistrar {
+      background: var(--texto);
+      color: var(--fondo);
+    }
+    #btnRegistrar:hover:not(:disabled) {
+      background: var(--oro);
+      border-color: var(--oro);
+    }
+
+    #estado {
+      text-align: center;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--oro-oscuro);
+      min-height: 1.5em;
+      margin: 24px 0;
+    }
+
+    /* ---------- Tabla de registros ---------- */
+    #seccionTabla { display: none; }
+    #seccionTabla {
+      background: var(--tarjeta);
+      border: 1px solid var(--linea);
+      border-radius: 4px;
+      padding: 40px 24px;
+      box-shadow: 0 20px 50px rgba(31, 29, 26, 0.06);
+    }
+    #seccionTabla br { display: none; }
+    #btnCerrar { margin-bottom: 20px; }
+
+    #buscador {
+      display: block;
+      max-width: 360px;
+      margin-bottom: 24px;
+    }
+
+    table {
+      display: block;
+      overflow-x: auto;
+      border-collapse: collapse;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    th, td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--linea);
+    }
+    th {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--suave);
+      border-bottom: 1px solid var(--oro);
+    }
+    tbody tr:hover { background: var(--fondo); }
+
+    #tabla button {
+      padding: 8px 12px;
+      font-size: 0.65rem;
+      margin-right: 6px;
+    }
+    #tabla button:last-child {
+      color: var(--rojo);
+      border-color: var(--rojo);
+    }
+    #tabla button:last-child:hover {
+      background: var(--rojo);
+      color: #fff;
+    }
+
+    /* ---------- Celulares ---------- */
+    @media (max-width: 480px) {
+      body { padding-top: 32px; }
+      h2 { font-size: 2rem; }
+      #formulario { padding: 28px 20px; }
+      #seccionTabla { padding: 28px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Captura de Datos</h2>
+
+  <form id="formulario">
+    <input type="hidden" id="id">
+
+    <label for="nombre">Nombre:</label><br>
+    <input type="text" id="nombre" required><br><br>
+
+    <label for="edad">Edad:</label><br>
+    <input type="number" id="edad" required min="1" max="120"><br><br>
+
+    <label for="telefono">Teléfono:</label><br>
+    <input type="text" id="telefono" required><br><br>
+
+    <label for="origen">Ciudad de origen:</label><br>
+    <input type="text" id="origen" required><br><br>
+
+    <label for="destino">Destino:</label><br>
+    <input type="text" id="destino" required><br><br>
+
+    <label for="fechaSalida">Fecha de salida:</label><br>
+    <input type="text" id="fechaSalida" required><br><br>
+
+    <label for="fechaRegreso">Fecha de regreso:</label><br>
+    <input type="text" id="fechaRegreso" required><br><br>
+
+    <label for="pasajeros">Número de pasajeros:</label><br>
+    <input type="number" id="pasajeros" required min="1"><br><br>
+
+    <label for="hospedaje">Tipo de hospedaje:</label><br>
+    <input type="text" id="hospedaje" required><br><br>
+
+    <label for="transporte">Transporte:</label><br>
+    <input type="text" id="transporte" required><br><br>
+
+    <!-- >>> AGREGAR CAMPO NUEVO (lugar 1 de 6)
+         Copia un bloque label + input y cambia el nombre y el id.
+         Ejemplo:
+         <label for="telefono">Teléfono:</label><br>
+         <input type="text" id="telefono" required><br><br>
+    -->
+
+    <button type="button" id="btnRegistrar">Registrar</button>
+    <button type="button" id="btnConsultar">Consultar</button>
+    <button type="button" id="btnModificar">Modificar</button>
+    <button type="button" id="btnEliminar">Eliminar</button>
+  </form>
+
+  <p id="estado"></p>
+
+  <div id="seccionTabla">
+    <h2>Registros</h2>
+    <button type="button" id="btnCerrar">Cerrar tabla</button>
+    <br><br>
+    <input type="text" id="buscador" placeholder="Buscar por nombre...">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Nombre</th>
+          <th>Edad</th>
+          <th>Teléfono</th>
+          <th>Ciudad de origen</th>
+          <th>Destino</th>
+          <th>Fecha de salida</th>
+          <th>Fecha de regreso</th>
+          <th>Número de pasajeros</th>
+          <th>Tipo de hospedaje</th>
+          <th>Transporte</th>
+          <!-- >>> AGREGAR CAMPO NUEVO (lugar 2 de 6)
+               Agrega aquí el encabezado de la columna nueva.
+               Ejemplo: <th>Teléfono</th>
+          -->
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Pega aquí la URL de tu implementación de Apps Script
+    var URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwLfs31Tql6tVCUDdZQAMnEpCebhal3CEY1Se-KiPPBKjiUuqZ-_mWnE28wnzlCSNnmFg/exec";
+    var registros = [];
+    var tablaVisible = false;
+
+    // ---------- Enviar datos al script ----------
+    function enviar(datos) {
+      return fetch(URL_SCRIPT, {
+        method: "POST",
+        body: new URLSearchParams(datos)
+      }).then(function (r) { return r.json(); });
+    }
+
+    // ---------- Botones activos según el estado ----------
+    // Registrar: solo si NO hay un registro cargado
+    // Modificar y Eliminar: solo si hay un registro cargado
+    function actualizarBotones() {
+      var hayRegistro = document.getElementById("id").value !== "";
+      document.getElementById("btnRegistrar").disabled = hayRegistro;
+      document.getElementById("btnModificar").disabled = !hayRegistro;
+      document.getElementById("btnEliminar").disabled = !hayRegistro;
+    }
+
+    function limpiarFormulario() {
+      document.getElementById("formulario").reset();
+      document.getElementById("id").value = "";
+      actualizarBotones();
+    }
+
+    // ---------- REGISTRAR ----------
+    document.getElementById("btnRegistrar").onclick = function () {
+      if (!document.getElementById("formulario").reportValidity()) return;
+
+      document.getElementById("estado").textContent = "Guardando...";
+      enviar({
+        accion: "guardar",
+
+        // >>> AGREGAR CAMPO NUEVO (lugar 3 de 6)
+        // Cada campo termina con coma, EXCEPTO el último.
+        // Ejemplo con telefono:
+        //   cargo: document.getElementById("cargo").value,
+        //   telefono: document.getElementById("telefono").value
+        nombre: document.getElementById("nombre").value,
+        edad: document.getElementById("edad").value,
+        telefono: document.getElementById("telefono").value,
+        origen: document.getElementById("origen").value,
+        destino: document.getElementById("destino").value,
+        fechaSalida: document.getElementById("fechaSalida").value,
+        fechaRegreso: document.getElementById("fechaRegreso").value,
+        pasajeros: document.getElementById("pasajeros").value,
+        hospedaje: document.getElementById("hospedaje").value,
+        transporte: document.getElementById("transporte").value
+
+      }).then(function (respuesta) {
+        terminarAccion(respuesta, "¡Registro guardado!");
+      });
+    };
+
+    // ---------- CONSULTAR ----------
+    document.getElementById("btnConsultar").onclick = function () {
+      document.getElementById("estado").textContent = "Consultando...";
+      tablaVisible = true;
+      document.getElementById("seccionTabla").style.display = "block";
+      cargarRegistros(function () {
+        document.getElementById("estado").textContent = "";
+      });
+    };
+
+    function cargarRegistros(alTerminar) {
+      fetch(URL_SCRIPT)
+        .then(function (r) { return r.json(); })
+        .then(function (datos) {
+          registros = datos;
+          mostrarTabla();
+          if (alTerminar) alTerminar();
+        });
+    }
+
+    function mostrarTabla() {
+      var filtro = document.getElementById("buscador").value.trim().toLowerCase();
+      var tabla = document.getElementById("tabla");
+      tabla.innerHTML = "";
+
+      registros.forEach(function (reg) {
+        // Solo muestra los nombres que INICIAN con lo escrito
+        if (!reg.nombre.toString().toLowerCase().startsWith(filtro)) return;
+
+        var tr = document.createElement("tr");
+        agregarCelda(tr, new Date(reg.fecha).toLocaleString());
+
+        // >>> AGREGAR CAMPO NUEVO (lugar 4 de 6)
+        // Agrega una línea por cada campo, en el mismo orden que los <th>.
+        // Ejemplo: agregarCelda(tr, reg.telefono);
+        agregarCelda(tr, reg.nombre);
+        agregarCelda(tr, reg.edad);
+        agregarCelda(tr, reg.telefono);
+        agregarCelda(tr, reg.origen);
+        agregarCelda(tr, reg.destino);
+        agregarCelda(tr, reg.fechaSalida);
+        agregarCelda(tr, reg.fechaRegreso);
+        agregarCelda(tr, reg.pasajeros);
+        agregarCelda(tr, reg.hospedaje);
+        agregarCelda(tr, reg.transporte);
+
+        var td = document.createElement("td");
+
+        var btnModificarFila = document.createElement("button");
+        btnModificarFila.textContent = "Modificar registro";
+        btnModificarFila.onclick = function () { cargarEnFormulario(reg); };
+
+        var btnEliminarFila = document.createElement("button");
+        btnEliminarFila.textContent = "Eliminar";
+        btnEliminarFila.onclick = function () { eliminar(reg.id); };
+
+        td.appendChild(btnModificarFila);
+        td.appendChild(btnEliminarFila);
+        tr.appendChild(td);
+        tabla.appendChild(tr);
+      });
+    }
+
+    function agregarCelda(fila, texto) {
+      var td = document.createElement("td");
+      td.textContent = texto;
+      fila.appendChild(td);
+    }
+
+    document.getElementById("buscador").oninput = mostrarTabla;
+
+    // ---------- CERRAR TABLA ----------
+    document.getElementById("btnCerrar").onclick = function () {
+      tablaVisible = false;
+      document.getElementById("seccionTabla").style.display = "none";
+      document.getElementById("buscador").value = "";
+      document.getElementById("tabla").innerHTML = "";
+    };
+
+    // ---------- Pasar el registro al formulario ----------
+    function cargarEnFormulario(reg) {
+      document.getElementById("id").value = reg.id;
+
+      // >>> AGREGAR CAMPO NUEVO (lugar 5 de 6)
+      // Agrega una línea por cada campo (aquí SÍ todas terminan en punto y coma).
+      // Ejemplo: document.getElementById("telefono").value = reg.telefono;
+      document.getElementById("nombre").value = reg.nombre;
+      document.getElementById("edad").value = reg.edad;
+      document.getElementById("telefono").value = reg.telefono;
+      document.getElementById("origen").value = reg.origen;
+      document.getElementById("destino").value = reg.destino;
+      document.getElementById("fechaSalida").value = reg.fechaSalida;
+      document.getElementById("fechaRegreso").value = reg.fechaRegreso;
+      document.getElementById("pasajeros").value = reg.pasajeros;
+      document.getElementById("hospedaje").value = reg.hospedaje;
+      document.getElementById("transporte").value = reg.transporte;
+
+      document.getElementById("estado").textContent =
+        "Modificando registro: cambia los datos y presiona Modificar";
+      actualizarBotones();
+
+      window.scrollTo(0, 0);                     // sube al formulario
+      document.getElementById("nombre").focus(); // cursor en el nombre
+    }
+
+    // ---------- MODIFICAR ----------
+    document.getElementById("btnModificar").onclick = function () {
+      var id = document.getElementById("id").value;
+
+      if (id === "") {
+        alert("Primero elige un registro con el botón 'Modificar registro'");
+        return;
+      }
+      if (!document.getElementById("formulario").reportValidity()) return;
+
+      document.getElementById("estado").textContent = "Modificando...";
+      enviar({
+        accion: "editar",
+        id: id,
+
+        // >>> AGREGAR CAMPO NUEVO (lugar 6 de 6)
+        // Igual que en REGISTRAR: coma en todos, menos en el último.
+        // Ejemplo con telefono:
+        //   cargo: document.getElementById("cargo").value,
+        //   telefono: document.getElementById("telefono").value
+        nombre: document.getElementById("nombre").value,
+        edad: document.getElementById("edad").value,
+        telefono: document.getElementById("telefono").value,
+        origen: document.getElementById("origen").value,
+        destino: document.getElementById("destino").value,
+        fechaSalida: document.getElementById("fechaSalida").value,
+        fechaRegreso: document.getElementById("fechaRegreso").value,
+        pasajeros: document.getElementById("pasajeros").value,
+        hospedaje: document.getElementById("hospedaje").value,
+        transporte: document.getElementById("transporte").value
+
+      }).then(function (respuesta) {
+        terminarAccion(respuesta, "¡Registro modificado!");
+      });
+    };
+
+    // ---------- ELIMINAR ----------
+    document.getElementById("btnEliminar").onclick = function () {
+      eliminar(document.getElementById("id").value);
+    };
+
+    function eliminar(id) {
+      if (!confirm("¿Seguro que quieres eliminar este registro?")) return;
+
+      document.getElementById("estado").textContent = "Eliminando...";
+      enviar({ accion: "eliminar", id: id }).then(function (respuesta) {
+        terminarAccion(respuesta, "Registro eliminado");
+      });
+    }
+
+    // ---------- Mensaje al terminar cualquier acción ----------
+    function terminarAccion(respuesta, mensajeOk) {
+      document.getElementById("estado").textContent =
+        respuesta.ok ? mensajeOk : "Error: " + respuesta.mensaje;
+      limpiarFormulario();
+      if (tablaVisible) cargarRegistros();  // refresca la tabla si está abierta
+    }
+
+    actualizarBotones();
+  </script>
+
+</body>
+</html>
